@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioHub - Portal Access</title>
+    <!-- Google Fonts & FontAwesome for Premium Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2f1 0%, #f4f7f6 50%, #e8f5e9 100%);
+            --text-main: #1a252c;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(0, 128, 128, 0.08);
+            --accent-color: #008080;
+            --accent-hover: #006666;
+            --text-muted: #62727d;
+            --shadow: 0 20px 40px rgba(0, 128, 128, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .auth-wrapper {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 460px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .brand-header .logo-icon {
+            font-size: 36px;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .brand-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .brand-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .auth-nav {
+            display: flex;
+            background: rgba(0, 128, 128, 0.04);
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .nav-tab.active {
+            background: #ffffff;
+            color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0, 128, 128, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1.5px solid rgba(0, 128, 128, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 128, 128, 0.06);
+        }
+
+        /* টিচার সেকশন প্রিমিয়াম বক্স */
+        .teacher-verification-zone {
+            display: none;
+            background: linear-gradient(180deg, rgba(0, 128, 128, 0.02) 0%, rgba(0, 128, 128, 0.05) 100%);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px dashed rgba(0, 128, 128, 0.25);
+            margin-bottom: 24px;
+        }
+
+        .zone-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ফাইল আপলোড কাস্টম ডিজাইন */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1xl 1fr;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .custom-file-upload {
+            background: #ffffff;
+            border: 1.5px dashed rgba(0, 128, 128, 0.15);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .custom-file-upload:hover {
+            background: rgba(0, 128, 128, 0.03);
+            border-color: var(--accent-color);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            color: #2e7d32;
+            margin-top: 4px;
+            display: none;
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            box-shadow: 0 8px 20px rgba(0, 128, 128, 0.15);
+        }
+
+        .submit-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 128, 128, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px);
+        }
+
+        .footer-toggle-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 24px;
+            font-weight: 500;
+        }
+
+        .footer-toggle-text span {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-weight: 700;
+        }
+        
+        .footer-toggle-text span:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="brand-header">
+            <div class="logo-icon"><i class="fa-solid fa-microscope"></i></div>
+            <h1>Welcome to BioHub</h1>
+            <p id="subheadingText">Access your scientific community</p>
+        </div>
+        
+        <div class="auth-nav">
+            <button class="nav-tab active" id="loginTab" onclick="switchAuthFlow('login')">Sign In</button>
+            <button class="nav-tab" id="registerTab" onclick="switchAuthFlow('register')">Create Account</button>
+        </div>
+
+        <form id="mainAuthForm">
+            <!-- Full Name (Register Only) -->
+            <div class="form-group" id="nameFieldGroup" style="display: none;">
+                <label>Full Name</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="inputName" placeholder="John Doe">
+                </div>
+            </div>
+
+            <!-- Role Selector (Register Only) -->
+            <div class="form-group" id="roleFieldGroup" style="display: none;">
+                <label>Join As</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <select id="selectRole" onchange="onRoleChanged()">
+                        <option value="Student">Student (Academic Access)</option>
+                        <option value="Teacher">Verified Teacher / Researcher</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- TEACHER VERIFICATION BOX (DYNAMIC) -->
+            <div class="teacher-verification-zone" id="teacherSection">
+                <div class="zone-title"><i class="fa-solid fa-id-card-clip"></i> Verification Credentials</div>
+                
+                <div class="form-group">
+                    <label>Institution / University</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-school"></i>
+                        <input type="text" id="insName" placeholder="e.g., University of Dhaka">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Department / Designation</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <input type="text" id="insDept" placeholder="e.g., Lecturer, Microbiology">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>NID / Passport Number</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-fingerprint"></i>
+                        <input type="number" id="nidNum" placeholder="National Identity Number">
+                    </div>
+                </div>
+
+                <!-- DOUBLE UPLOAD: ID CARD & NID CARD -->
+                <div class="form-group">
+                    <label>Upload Documents (Photos)</label>
+                    <div class="upload-grid">
+                        <label for="fileIdCard" class="custom-file-upload">
+                            <i class="fa-solid fa-camera"></i> Institution ID
+                        </label>
+                        <input type="file" id="fileIdCard" accept="image/*" style="display:none;">
+                        
+                        <label for="fileNidCard" class="custom-file-upload">
+                            <i class="fa-solid fa-passport"></i> NID Front Image
+                        </label>
+                        <input type="file" id="fileNidCard" accept="image/*" style="display:none;">
+                    </div>
+                    <div id="badgeId" class="status-badge"><i class="fa-solid fa-circle-check"></i> Institution ID attached</div>
+                    <div id="badgeNid" class="status-badge"><i class="fa-solid fa-circle-check"></i> NID Document attached</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="inputEmail" placeholder="name@domain.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Secure Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="inputPassword" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="actionBtn">Sign In to Dashboard</button>
+        </form>
+
+        <div class="footer-toggle-text" id="footerToggleBox">
+            New to the platform? <span onclick="switchAuthFlow('register')">Create an account</span>
+        </div>
+    </div>
+
+    <!-- FIREBASE SYSTEM INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBXZwXKgN7aJglLxJaKPE4l7ehLTJO_jM",
+            authDomain: "microbilogy-hub.firebaseapp.com",
+            projectId: "microbilogy-hub",
+            storageBucket: "microbilogy-hub.firebasestorage.app",
+            messagingSenderId: "97322008506",
+            appId: "1:97322008506:web:e1ef46ddf6ecbc2095a783",
+            measurementId: "G-83EM9RS8VS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let activeFlow = "login";
+        let base64IdCard = "";
+        let base64NidCard = "";
+
+        // গ্লোবাল ফাংশন সুইচিং হ্যান্ডলার
+        window.switchAuthFlow = function(flow) {
+            activeFlow = flow;
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const nameField = document.getElementById('nameFieldGroup');
+            const roleField = document.getElementById('roleFieldGroup');
+            const actionBtn = document.getElementById('actionBtn');
+            const footerToggleBox = document.getElementById('footerToggleBox');
+            const subheadingText = document.getElementById('subheadingText');
+
+            if (flow === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                nameField.style.display = 'none';
+                roleField.style.display = 'none';
+                document.getElementById('teacherSection').style.display = 'none';
+                subheadingText.innerText = "Access your scientific community";
+                actionBtn.innerText = "Sign In to Dashboard";
+                footerToggleBox.innerHTML = `New to the platform? <span onclick="switchAuthFlow('register')">Create an account</span>`;
+            } else {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                nameField.style.display = 'block';
+                roleField.style.display = 'block';
+                subheadingText.innerText = "Join our microbiology community network";
+                onRoleChanged();
+                actionBtn.innerText = "Complete Setup";
+                footerToggleBox.innerHTML = `Already have an account? <span onclick="switchAuthFlow('login')">Sign In here</span>`;
+            }
+        };
+
+        window.onRoleChanged = function() {
+            const role = document.getElementById('selectRole').value;
+            const teacherSection = document.getElementById('teacherSection');
+            if (activeFlow === 'register' && role === 'Teacher') {
+                teacherSection.style.display = 'block';
+            } else {
+                teacherSection.style.display = 'none';
+            }
+        };
+
+        // Base64 ফাইল কনভার্টার লজিকসমূহ
+        document.getElementById('fileIdCard').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    base64IdCard = reader.result;
+                    document.getElementById('badgeId').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('fileNidCard').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    base64NidCard = reader.result;
+                    document.getElementById('badgeNid').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ফর্ম সাবমিশন ট্রিগার
+        document.getElementById('mainAuthForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('inputEmail').value.trim();
+            const password = document.getElementById('inputPassword').value;
+
+            if (activeFlow === "login") {
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    alert("Authentication Failed: " + error.message);
+                }
+            } else {
+                const name = document.getElementById('inputName').value.trim();
+                const role = document.getElementById('selectRole').value;
+
+                if (!name) {
+                    alert("Please provide your full profile name.");
+                    return;
+                }
+
+                if (role === "Teacher") {
+                    const nidNum = document.getElementById('nidNum').value.trim();
+                    if (!nidNum) { alert("Security Notice: NID code validation is required!"); return; }
+                    if (!base64IdCard) { alert("Validation Notice: Please attach your Institution ID card image."); return; }
+                    if (!base64NidCard) { alert("Validation Notice: Please upload your NID Card front picture."); return; }
+                }
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    await updateProfile(user, { displayName: name });
+
+                    const userDocData = {
+                        uid: user.uid,
+                        name: name,
+                        email: email,
+                        role: role,
+                        balance: 100,
+                        totalRating: 0,
+                        avatarUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                        bio: role === "Teacher" ? "Verified Faculty/Researcher Node." : "Academic Student Node.",
+                        timestamp: new Date()
+                    };
+
+                    if (role === "Teacher") {
+                        userDocData.institution = document.getElementById('insName').value.trim() || "Unspecified University";
+                        userDocData.departmentInfo = document.getElementById('insDept').value.trim() || "Microbiology Dept";
+                        userDocData.nidNumber = document.getElementById('nidNum').value.trim();
+                        userDocData.idCardImage = base64IdCard; // ইনস্টিটিউট আইডি সেভ হলো
+                        userDocData.nidCardImage = base64NidCard; // নতুন এনআইডি কার্ডের ছবি সেভ হলো
+                        userDocData.isVerified = false; // অ্যাডমিন প্যানেল দিয়ে ট্রু করানোর জন্য ডিফল্ট ফলস
+                    }
+
+                    await setDoc(doc(db, "users", user.uid), userDocData);
+
+                    localStorage.setItem('isLoggedIn', 'true');
+                    alert("Profile Deployment Successful!");
+                    window.location.href = 'index.html';
+
+                } catch (error) {
+                    alert("Deployment Blocked: " + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
