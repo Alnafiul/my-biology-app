@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .payment-box { background: #f4f4f4; padding: 15px; border-left: 5px solid #28a745; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .btn-approve { background: green; color: white; padding: 5px 10px; cursor: pointer; border: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; padding: 20px; background-color: #f9f9f9; }
+        .payment-box { background: white; padding: 20px; border-left: 5px solid #008080; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 10px; overflow: hidden; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #008080; color: white; }
+        .btn-approve { background: #28a745; color: white; padding: 8px 15px; cursor: pointer; border: none; border-radius: 5px; }
+        .btn-approve:hover { background: #218838; }
     </style>
 </head>
 <body>
@@ -51,7 +54,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // অ্যাডমিন ইমেইল লিস্ট (এখানে আরও ইমেইল যোগ করতে পারবে)
         const adminEmails = ["alnafiulhassan@gmail.com"]; 
 
         onAuthStateChanged(auth, (user) => {
@@ -61,27 +63,31 @@
             }
         });
 
+        // ডেটা লোড করা
         onSnapshot(collection(db, "withdraw_requests"), (snapshot) => {
             const table = document.getElementById("requestTable");
             table.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const data = doc.data();
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
                 if(data.status === "Pending") {
-                    table.innerHTML += `<tr>
-                        <td>${data.name}</td>
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${data.name || 'N/A'}</td>
                         <td>${data.requestedAmount}</td>
                         <td>${data.number}</td>
                         <td>${data.status}</td>
-                        <td><button class="btn-approve" onclick="window.approve('${doc.id}')">Approve</button></td>
-                    </tr>`;
+                        <td><button class="btn-approve" id="btn-${docSnap.id}">Approve</button></td>
+                    `;
+                    table.appendChild(row);
+
+                    // বাটন ইভেন্ট লিসেনার
+                    document.getElementById(`btn-${docSnap.id}`).onclick = async () => {
+                        await updateDoc(doc(db, "withdraw_requests", docSnap.id), { status: "Approved" });
+                        alert("Payment Approved!");
+                    };
                 }
             });
         });
-
-        window.approve = async (id) => {
-            await updateDoc(doc(db, "withdraw_requests", id), { status: "Approved" });
-            alert("Payment Approved!");
-        };
     </script>
 </body>
 </html>

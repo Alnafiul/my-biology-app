@@ -153,7 +153,6 @@
             box-shadow: 0 0 0 4px rgba(0, 128, 128, 0.06);
         }
 
-        /* টিচার সেকশন প্রিমিয়াম বক্স */
         .teacher-verification-zone {
             display: none;
             background: linear-gradient(180deg, rgba(0, 128, 128, 0.02) 0%, rgba(0, 128, 128, 0.05) 100%);
@@ -175,10 +174,9 @@
             gap: 6px;
         }
 
-        /* ফাইল আপলোড কাস্টম ডিজাইন */
         .upload-grid {
             display: grid;
-            grid-template-columns: 1xl 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 4px;
         }
@@ -229,10 +227,6 @@
             background: var(--accent-hover);
             transform: translateY(-2px);
             box-shadow: 0 12px 24px rgba(0, 128, 128, 0.2);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0px);
         }
 
         .footer-toggle-text {
@@ -290,7 +284,7 @@
                 </div>
             </div>
 
-            <!-- TEACHER VERIFICATION BOX (DYNAMIC) -->
+            <!-- TEACHER VERIFICATION BOX -->
             <div class="teacher-verification-zone" id="teacherSection">
                 <div class="zone-title"><i class="fa-solid fa-id-card-clip"></i> Verification Credentials</div>
                 
@@ -318,7 +312,6 @@
                     </div>
                 </div>
 
-                <!-- DOUBLE UPLOAD: ID CARD & NID CARD -->
                 <div class="form-group">
                     <label>Upload Documents (Photos)</label>
                     <div class="upload-grid">
@@ -385,7 +378,6 @@
         let base64IdCard = "";
         let base64NidCard = "";
 
-        // গ্লোবাল ফাংশন সুইচিং হ্যান্ডলার
         window.switchAuthFlow = function(flow) {
             activeFlow = flow;
             const loginTab = document.getElementById('loginTab');
@@ -427,7 +419,6 @@
             }
         };
 
-        // Base64 ফাইল কনভার্টার লজিকসমূহ
         document.getElementById('fileIdCard').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -452,10 +443,8 @@
             }
         });
 
-        // ফর্ম সাবমিশন ট্রিগার
         document.getElementById('mainAuthForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('inputEmail').value.trim();
             const password = document.getElementById('inputPassword').value;
 
@@ -471,10 +460,7 @@
                 const name = document.getElementById('inputName').value.trim();
                 const role = document.getElementById('selectRole').value;
 
-                if (!name) {
-                    alert("Please provide your full profile name.");
-                    return;
-                }
+                if (!name) { alert("Please provide your full profile name."); return; }
 
                 if (role === "Teacher") {
                     const nidNum = document.getElementById('nidNum').value.trim();
@@ -486,7 +472,6 @@
                 try {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-
                     await updateProfile(user, { displayName: name });
 
                     const userDocData = {
@@ -494,10 +479,10 @@
                         name: name,
                         email: email,
                         role: role,
-                        balance: 100,
+                        balance: 0,
+                        membership: "Free", // শুরুতে ফ্রি থাকবে
                         totalRating: 0,
                         avatarUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-                        bio: role === "Teacher" ? "Verified Faculty/Researcher Node." : "Academic Student Node.",
                         timestamp: new Date()
                     };
 
@@ -505,17 +490,15 @@
                         userDocData.institution = document.getElementById('insName').value.trim() || "Unspecified University";
                         userDocData.departmentInfo = document.getElementById('insDept').value.trim() || "Microbiology Dept";
                         userDocData.nidNumber = document.getElementById('nidNum').value.trim();
-                        userDocData.idCardImage = base64IdCard; // ইনস্টিটিউট আইডি সেভ হলো
-                        userDocData.nidCardImage = base64NidCard; // নতুন এনআইডি কার্ডের ছবি সেভ হলো
-                        userDocData.isVerified = false; // অ্যাডমিন প্যানেল দিয়ে ট্রু করানোর জন্য ডিফল্ট ফলস
+                        userDocData.idCardImage = base64IdCard;
+                        userDocData.nidCardImage = base64NidCard;
+                        userDocData.isVerified = false; 
                     }
 
                     await setDoc(doc(db, "users", user.uid), userDocData);
-
                     localStorage.setItem('isLoggedIn', 'true');
                     alert("Profile Deployment Successful!");
                     window.location.href = 'index.html';
-
                 } catch (error) {
                     alert("Deployment Blocked: " + error.message);
                 }
