@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'auth.html';
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Microbiology Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Theme Sync with Home Page */
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --sidebar-bg: #004d4d;
+            --border-color: #eee;
+        }
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --sidebar-bg: #002626;
+            --border-color: #333;
+        }
+
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; min-height: 100vh; transition: all 0.3s; }
+        
+        /* Sidebar Styling */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 20px; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 22px; border-bottom: 1px solid #006666; padding-bottom: 15px; }
+        .sidebar a { color: #c2f0f0; text-decoration: none; padding: 12px 15px; margin-bottom: 8px; border-radius: 4px; display: block; font-weight: 500; transition: all 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background-color: #008080; color: white; }
+        .logout-btn { margin-top: auto; background-color: #ff4d4d; text-align: center; cursor: pointer; color: white !important; }
+        .logout-btn:hover { background-color: #cc0000 !important; }
+        
+        /* Main Content */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header-box { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .header-box h1 { color: #008080; font-size: 26px; }
+        [data-theme="dark"] .header-box h1 { color: #00b3b3; }
+
+        /* Dashboard Layout Grid */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        /* Profile Card Styling */
+        .profile-card { background: var(--card-bg); padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border-color); border-top: 5px solid #008080; }
+        .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .profile-avatar { width: 65px; height: 65px; background: #e0f2f1; color: #008080; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; }
+        .profile-details p { margin-bottom: 10px; font-size: 15px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; }
+        .profile-details strong { color: #008080; }
+        [data-theme="dark"] .profile-details strong { color: #00b3b3; }
+
+        .role-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; color: white; font-weight: bold; }
+        .badge-Student { background-color: #0288d1; }
+        .badge-Teacher { background-color: #e65100; }
+
+        /* Live Questions List Styling */
+        .questions-card { background: var(--card-bg); padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border-color); max-height: 400px; overflow-y: auto; }
+        .questions-card h2 { font-size: 18px; color: #008080; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid var(--border-color); }
+        .q-item { padding: 12px; background: var(--bg-color); border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #ef4444; }
+        .q-item h4 { font-size: 14px; margin-bottom: 4px; color: var(--text-color); }
+        .q-meta { font-size: 11px; color: #888; }
+
+        /* Stats Grid Counters */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 4px solid #008080; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: 1px solid var(--border-color); }
+        .card.notes { border-top-color: #ff9800; }
+        .card.articles { border-top-color: #9c27b0; }
+        .card h3 { font-size: 12px; color: #777; text-transform: uppercase; margin-bottom: 5px; }
+        .card .number { font-size: 24px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🔬 MicroHub</h2>
+        <a href="#" class="active">📊 Dashboard</a>
+        <a href="index.html">🌐 Community Feed / Home</a>
+        <a href="#" class="logout-btn" id="logoutBtn">🚪 Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header-box">
+            <h1>Welcome Back, <span id="welcomeName">Loading...</span>!</h1>
+            <p style="font-size: 14px; color: #777; margin-top: 5px;">Manage your profile and track active community metrics.</p>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <h3>Total Questions Asked</h3>
+                <div class="number" id="qCount">0</div>
+            </div>
+            <div class="card notes">
+                <h3>Total Notes Shared</h3>
+                <div class="number" id="nCount">0</div>
+            </div>
+            <div class="card articles">
+                <h3>Science Articles</h3>
+                <div class="number" id="aCount">0</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="avatarLetter">M</div>
+                    <div>
+                        <h2 style="font-size: 20px;" id="profileRoleTitle">User Profile</h2>
+                        <span id="roleBadgeSlot"></span>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <p><strong>Full Name:</strong> <span id="profName">...</span></p>
+                    <p><strong>Registered Email:</strong> <span id="profEmail">...</span></p>
+                    
+                    <div id="teacherExtraProfile" style="display: none;">
+                        <p><strong>Designation:</strong> <span id="profDesignation">...</span></p>
+                        <p><strong>Department:</strong> <span id="profDept">...</span></p>
+                        <p><strong>Verification Status:</strong> <span style="color: green; font-weight: bold;">✓ Verified Expert</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="questions-card">
+                <h2>❓ Recent Questions from Community</h2>
+                <div id="live-questions-list">
+                    <p style="color:#aaa; font-size:13px;">Loading active discussions...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBXZwXKgN7aJglLxJaKPE4l7ehLTJO_jM",
+            authDomain: "microbilogy-hub.firebaseapp.com",
+            projectId: "microbilogy-hub",
+            storageBucket: "microbilogy-hub.firebasestorage.app",
+            messagingSenderId: "97322008506",
+            appId: "1:97322008506:web:e1ef46ddf6ecbc2095a783",
+            measurementId: "G-83EM9RS8VS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- THEME SYNC WITH HOME PAGE ---
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // ১. ডাইনামিক প্রোফাইল ডাটা লোড করা
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if(userDoc.exists()) {
+                        const userData = userDoc.data();
+                        
+                        // বেসিক ডাটা ফিল করা
+                        document.getElementById('welcomeName').innerText = userData.name;
+                        document.getElementById('profName').innerText = userData.name;
+                        document.getElementById('profEmail').innerText = userData.email;
+                        document.getElementById('avatarLetter').innerText = userData.name.charAt(0).toUpperCase();
+                        
+                        // রোল টাইটেল ও ব্যাজ ডাইনামিক সেট করা
+                        document.getElementById('profileRoleTitle').innerText = userData.role + " Profile";
+                        const badge = document.getElementById('roleBadgeSlot');
+                        badge.innerText = userData.role;
+                        badge.className = `role-badge badge-${userData.role}`;
+
+                        // টিচার অ্যাকাউন্ট হলে এক্সট্রা ফিল্ডগুলো সচল করা
+                        if(userData.role === 'Teacher') {
+                            document.getElementById('teacherExtraProfile').style.display = 'block';
+                            document.getElementById('profDesignation').innerText = userData.designation || 'N/A';
+                            document.getElementById('profDept').innerText = userData.department || 'N/A';
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error loading profile: ", err);
+                }
+
+                // ২. গ্লোবাল কাউন্টার স্ট্যাটস লোড করা
+                try {
+                    const querySnapshot = await getDocs(collection(db, "posts"));
+                    let questions = 0, notes = 0, articles = 0;
+
+                    querySnapshot.forEach((doc) => {
+                        if(doc.data().type === "Question") questions++;
+                        if(doc.data().type === "Note") notes++;
+                        if(doc.data().type === "Article") articles++;
+                    });
+
+                    document.getElementById('qCount').innerText = questions;
+                    document.getElementById('nCount').innerText = notes;
+                    document.getElementById('aCount').innerText = articles;
+                } catch (err) {
+                    console.error("Error stats: ", err);
+                }
+
+                // ৩. লাইভ প্রশ্ন তালিকা লোড করা (সর্বশেষ ৫টি প্রশ্ন দেখাবে)
+                const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                onSnapshot(q, (snapshot) => {
+                    const qListContainer = document.getElementById('live-questions-list');
+                    qListContainer.innerHTML = '';
+                    let questionFound = false;
+
+                    snapshot.forEach((postDoc) => {
+                        const data = postDoc.data();
+                        // শুধু প্রশ্ন টাইপ পোস্টগুলোকে ফিল্টার করে আনা হচ্ছে
+                        if(data.type === "Question") {
+                            questionFound = true;
+                            const item = document.createElement('div');
+                            item.classList.add('q-item');
+                            item.innerHTML = `
+                                <h4>❓ ${data.title}</h4>
+                                <div class="q-meta">Asked by: ${data.author} | Answers: ${data.answers ? data.answers.length : 0}</div>
+                            `;
+                            qListContainer.appendChild(item);
+                        }
+                    });
+
+                    if(!questionFound) {
+                        qListContainer.innerHTML = `<p style='color:#aaa; font-size:13px;'>No active questions available.</p>`;
+                    }
+                });
+            }
+        });
+
+        // Logout Logic
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userRole');
+                window.location.href = 'auth.html';
+            });
+        });
+    </script>
+</body>
+</html>

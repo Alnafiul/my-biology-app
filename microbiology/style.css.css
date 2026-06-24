@@ -1,0 +1,28 @@
+/* বেসিক স্টাইল */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* মোবাইল ভিউয়ের জন্য রেসপন্সিভ কোড */
+@media only screen and (max-width: 600px) {
+  body {
+    width: 95%; /* মোবাইলে দুইপাশে সামান্য জায়গা রাখবে */
+    padding: 10px;
+  }
+  table, img {
+    max-width: 100%; /* ছবি বা টেবিল স্ক্রিনের বাইরে বেরিয়ে যাবে না */
+  }
+}
+
+/* বাটন বা লিংকের জন্য */
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}

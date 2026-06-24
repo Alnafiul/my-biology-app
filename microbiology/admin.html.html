@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .payment-box { background: #f4f4f4; padding: 15px; border-left: 5px solid #28a745; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .btn-approve { background: green; color: white; padding: 5px 10px; cursor: pointer; border: none; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel - Withdrawal Requests</h1>
+    
+    <div class="payment-box">
+        <p><strong>বিকাশ (Bkash):</strong> 01829167126</p>
+        <p><strong>নগদ/রকেট (Nagad/Rocket):</strong> 01708711771</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Amount</th>
+                <th>Payment Number</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="requestTable"></tbody>
+    </table>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBXZwXKgN7aJglLxJaKPE4l7ehLTJO_jM",
+            authDomain: "microbilogy-hub.firebaseapp.com",
+            projectId: "microbilogy-hub",
+            storageBucket: "microbilogy-hub.firebasestorage.app",
+            messagingSenderId: "97322008506",
+            appId: "1:97322008506:web:e1ef46ddf6ecbc2095a783",
+            measurementId: "G-83EM9RS8VS"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // অ্যাডমিন ইমেইল লিস্ট (এখানে আরও ইমেইল যোগ করতে পারবে)
+        const adminEmails = ["alnafiulhassan@gmail.com"]; 
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user || !adminEmails.includes(user.email)) {
+                alert("Access Denied! You are not an admin.");
+                window.location.href = "index.html";
+            }
+        });
+
+        onSnapshot(collection(db, "withdraw_requests"), (snapshot) => {
+            const table = document.getElementById("requestTable");
+            table.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if(data.status === "Pending") {
+                    table.innerHTML += `<tr>
+                        <td>${data.name}</td>
+                        <td>${data.requestedAmount}</td>
+                        <td>${data.number}</td>
+                        <td>${data.status}</td>
+                        <td><button class="btn-approve" onclick="window.approve('${doc.id}')">Approve</button></td>
+                    </tr>`;
+                }
+            });
+        });
+
+        window.approve = async (id) => {
+            await updateDoc(doc(db, "withdraw_requests", id), { status: "Approved" });
+            alert("Payment Approved!");
+        };
+    </script>
+</body>
+</html>
