@@ -154,61 +154,90 @@ input:checked + .slider:before { transform: translateX(22px); }
 .p-numbers p:last-child { margin-bottom: 0; }
 /* আগের CSS কোডগুলো এখানে থাকবে */
 
-/* --- MOBILE RESPONSIVE DESIGN --- */
+/* --- MOBILE RESPONSIVE DESIGN (FIXED) --- */
 @media (max-width: 768px) {
-    /* মেইন কন্টেইনারকে ফ্লেক্স কলামে রূপান্তর */
+    /* মেইন কন্টেইনার ফিক্স */
     .app-container { 
-        display: block; 
-        max-width: 100%; 
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        overflow-x: hidden; /* স্ক্রিন ডানে-বামে নড়াচড়া করবে না */
     }
 
-    /* বাম পাশের মেনু নিচে নিয়ে আসা (Facebook Mobile style) */
+    /* ফেসবুক মোবাইল স্টাইল বটম নেভিগেশন বার */
     .left-sidebar { 
         position: fixed; 
         bottom: 0; 
         left: 0; 
         width: 100%; 
         height: 60px; 
-        flex-direction: row; 
+        display: flex !important; /* ফ্লেক্সবক্স নিশ্চিত করা হলো */
+        flex-direction: row !important; 
         justify-content: space-around; 
-        background: var(--card-bg); 
-        border-top: 1px solid var(--border-color); 
-        border-right: none;
-        z-index: 1000;
-        padding: 5px;
+        align-items: center;
+        background: var(--card-bg, #ffffff); 
+        border-top: 1px solid var(--border-color, #ddd); 
+        border-right: none !important;
+        z-index: 9999; /* যেন সবকিছুর উপরে থাকে */
+        padding: 5px 0;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1); /* সুন্দর একটি শ্যাডো */
     }
     
-    .sidebar-text { display: none; } /* মোবাইলে শুধু আইকন দেখাবে */
-    .logo, .theme-box, #logoutBtn { display: none; } /* অপ্রয়োজনীয় মেনু মোবাইলে লুকানো */
+    /* মোবাইলে শুধু আইকন দেখাবে, লেখা লুপিয়ে যাবে */
+    .sidebar-text { 
+        display: none !important; 
+    } 
     
+    /* লোগো এবং থিম বক্স লুকানো */
+    .logo, .theme-box { 
+        display: none !important; 
+    } 
+    
+    /* লগআউট বাটনটি যদি নিচে দেখাতে চাও তবে এটি সরাইও না, আর লুকাতে চাইলে display: none; করো */
+    #logoutBtn { 
+        margin-bottom: 0;
+    }
+    
+    /* নেভিগেশন লিংকগুলোর মোবাইল সাইজ */
     .nav-link { 
-        margin-bottom: 0; 
-        font-size: 20px; 
-        padding: 10px; 
+        margin-bottom: 0 !important; 
+        font-size: 22px; 
+        padding: 8px; 
+        display: flex;
         justify-content: center;
+        align-items: center;
+        flex: 1; /* প্রতিটি বাটন সমান জায়গা পাবে */
     }
 
-    /* মেইন ফিড পুরো জায়গা দখল করবে */
+    /* মেইন ফিড পুরো জায়গা নেবে এবং নিচের মেনুর জন্য প্যাডিং থাকবে */
     .main-feed { 
-        border-right: none; 
-        padding-bottom: 70px; /* নিচের মেনুর জন্য জায়গা */
-        width: 100%;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-right: none !important; 
+        padding: 10px 10px 75px 10px !important; /* নিচে ৭৫px প্যাডিং যাতে কন্টেন্ট মেনুর নিচে না ঢাকা পড়ে */
+        box-sizing: border-box;
     }
 
-    /* ডান পাশের সাইডবার মোবাইলে সরিয়ে দেওয়া (উইজেটগুলো) */
+    /* ডান পাশের উইজেট সাইডবার মোবাইলে হাইড */
     .right-sidebar { 
-        display: none; 
+        display: none !important; 
     }
 
-    /* পোস্ট কার্ডের ডিজাইন মোবাইলে একটু ছোট করা */
+    /* পোস্ট কার্ড ডিজাইন মোবাইল ফ্রেন্ডলি */
     .post-card { 
-        padding: 15px; 
+        width: 100% !important;
+        padding: 12px !important; 
+        margin-bottom: 12px !important;
+        box-sizing: border-box;
+        border-radius: 8px !important; /* মোবাইলে কোণাগুলো একটু গোল দেখাবে */
     }
 
-    /* মোবাইল স্ক্রিনে মোডাল বক্সের সাইজ অ্যাডজাস্টমেন্ট */
+    /* মোবাইল স্ক্রিনে পপআপ বা মোডাল বক্সের সাইজ */
     .modal-box, .p-modal-box { 
-        width: 95%; 
-        max-height: 80vh; 
+        width: 92% !important; 
+        max-height: 85vh !important; 
         overflow-y: auto; 
+        margin: auto;
+        padding: 15px !important;
     }
 }
