@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCBXZwXKgN7aJglLxJaKPE4l7ehLTJO_jM",
@@ -14,6 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+window.db = db; // 👈 এই লাইনটি ম্যাজিকের মতো কাজ করবে!
 
 let currentUserName = "";
 let currentUserRole = "Student";
@@ -610,5 +611,65 @@ window.openTeacherModal = function(uid) {
 window.closeProfileModal = function(e) {
     if(e.target === document.getElementById('profileModal')) {
         document.getElementById('profileModal').style.display = 'none';
+    }
+}
+// --- 🔍 আলটিমেট সার্চ ফাংশন (১০০% সলভড) ---
+window.searchNotes = async function() {
+    // ১. ইনপুট ফিল্ড থেকে লেখাটি নিয়ে ছোট হাতের অক্ষরে কনভার্ট করা হলো
+    const searchText = document.getElementById('homeSearchInput').value.trim().toLowerCase();
+    const postsContainer = document.getElementById('posts-container');
+    
+    if (searchText === "") {
+        alert("অনুগ্রহ করে কিছু লিখে সার্চ করুন!");
+        return;
+    }
+
+    postsContainer.innerHTML = `<p style="text-align: center; color: var(--secondary-text); margin-top: 30px;">🔍 Searching...</p>`;
+
+    try {
+        // ২. মডিউল স্কোপের ঝামেলা এড়াতে সরাসরি ফায়ারস্টোর মেথড ইমপোর্ট করা হলো
+        const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        const currentDb = getFirestore();
+        const postsRef = collection(currentDb, "posts");
+        
+        // ৩. ফায়ারবেস থেকে সব পোস্ট রিড করা
+        const querySnapshot = await getDocs(postsRef);
+        postsContainer.innerHTML = ""; 
+        let hasResults = false;
+
+        querySnapshot.forEach((doc) => {
+            const post = doc.data();
+            const postTitle = (post.title || "").toLowerCase();
+            const postContent = (post.content || "").toLowerCase();
+
+            // ৪. ছোট-বড় অক্ষর মিলিয়ে টাইটেল বা কন্টেন্টে মিল থাকলে রেজাল্ট শো করবে
+            if (postTitle.includes(searchText) || postContent.includes(searchText)) {
+                hasResults = true;
+                
+                // ৫. ডাইনামিক পোস্ট রেন্ডারিং কার্ড (ডার্ক/লাইট মোড সাপোর্টেড)
+                postsContainer.innerHTML += `
+                    <div class="post-card" style="background: var(--card-bg, #1e293b); padding: 20px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border-color, #334155); text-align: left;">
+                        <div style="display:flex; align-items:center; margin-bottom:12px;">
+                            <span style="background: var(--primary-color, #007bff); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase;">${post.type || 'Post'}</span>
+                        </div>
+                        <h3 style="margin-top: 5px; color: var(--text-color, #f8fafc); font-size: 18px; font-weight: 600;">${post.title}</h3>
+                        <p style="color: var(--secondary-text, #94a3b8); font-size: 14px; margin-top: 10px; line-height: 1.5; white-space: pre-wrap;">${post.content}</p>
+                    </div>
+                `;
+            }
+        });
+
+        // যদি কোনো পোস্ট ম্যাচ না করে
+        if (!hasResults) {
+            postsContainer.innerHTML = `
+                <div style="text-align:center; padding: 50px 20px; color: var(--secondary-text);">
+                    <p style="font-size: 16px; font-weight: 500;">❌ "${searchText}" নামে কোনো পোস্ট খুঁজে পাওয়া যায়নি!</p>
+                    <button onclick="location.reload()" style="background:var(--primary-color, #007bff); color:white; border:none; padding:10px 20px; border-radius:30px; margin-top:15px; font-weight: bold; cursor:pointer;">Show All Posts</button>
+                </div>`;
+        }
+
+    } catch (error) {
+        console.error("Search Error: ", error);
+        postsContainer.innerHTML = `<p style="text-align: center; color: red; margin-top: 20px;">Something went wrong!</p>`;
     }
 }

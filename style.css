@@ -241,3 +241,83 @@ input:checked + .slider:before { transform: translateX(22px); }
         padding: 15px !important;
     }
 }
+/* --- HIGHLIGHTED SEARCH BOX DESIGN --- */
+
+/* সার্চ বক্সের মেইন কন্টেইনার */
+.search-box-container {
+    width: 100%;
+    margin: 15px 0 25px 0;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+/* সার্চ ইনপুট ও বাটনের র্যাপার */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg, #ffffff);
+    border: 2px solid var(--primary-color, #007bff); /* বর্ডার একটু মোটা করা হলো */
+    border-radius: 30px; 
+    padding: 6px 6px 6px 18px;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15); /* নীলচে সুন্দর শ্যাডো */
+    transition: all 0.3s ease;
+}
+
+/* মাউস বা ফোকাস নিলে বর্ডার গ্লো করবে */
+.search-wrapper:focus-within {
+    box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* সার্চ আইকন */
+.search-icon {
+    font-size: 18px; /* আইকন বড় করা হলো */
+    margin-right: 12px;
+    color: var(--primary-color, #007bff);
+}
+
+/* ইনপুট ফিল্ড */
+.search-wrapper input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px; /* লেখার সাইজ বড় করা হলো */
+    color: var(--text-color, #333);
+}
+
+/* 🚀 বড় এবং হাইলাইটেড সার্চ বাটন */
+.search-wrapper button {
+    background: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+    padding: 12px 30px; /* প্যাডিং বাড়িয়ে বাটন বড় করা হয়েছে */
+    border-radius: 25px;
+    font-size: 16px; /* ফন্ট সাইজ বড় */
+    font-weight: 800; /* লেখা আরও বোল্ড করা হলো */
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* বাটনের নিজস্ব শ্যাডো */
+    transition: all 0.2s ease;
+}
+
+/* বাটনের হোভার এফেক্ট */
+.search-wrapper button:hover {
+    background: #0056b3; 
+    box-shadow: 0 6px 15px rgba(0, 86, 179, 0.4);
+    transform: scale(1.03); /* হোভার করলে বাটনটি সামান্য বড় হবে */
+}
+
+/* --- মোবাইলের জন্য রেসপন্সিভনেস --- */
+@media (max-width: 768px) {
+    .search-wrapper {
+        padding: 5px 5px 5px 12px;
+    }
+    .search-wrapper input {
+        font-size: 15px; 
+    }
+    .search-wrapper button {
+        padding: 10px 20px; /* মোবাইলেও যেন স্পষ্ট থাকে */
+        font-size: 14px;
+    }
+}

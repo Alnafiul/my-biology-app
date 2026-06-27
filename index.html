@@ -74,6 +74,15 @@
                 <button class="feed-tab" onclick="filterCategory('Note')">Notes</button>
                 <button class="feed-tab" onclick="filterCategory('Article')">Articles</button>
             </div>
+
+            <div class="search-box-container">
+                <div class="search-wrapper">
+                    <i class="search-icon">🔍</i>
+                    <input type="text" id="homeSearchInput" placeholder="Medical microbiology, Virology লিখে সার্চ করুন...">
+                    <button id="homeSearchBtn" onclick="searchNotes()">Search</button>
+                </div>
+            </div>
+
             <div class="posts-holder" id="posts-container">
                 <p style="text-align: center; color: var(--secondary-text); margin-top: 30px;">Loading content...</p>
             </div>
